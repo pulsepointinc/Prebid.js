@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import PulsePointAdapter from '../../../src/adapters/pulsepoint';
-import BidManager from '../../../src/bidmanager';
+import bidManager from '../../../src/bidmanager';
 import adLoader from '../../../src/adloader';
 
 describe("PulsePoint Adapter Tests", () => {
@@ -32,7 +32,7 @@ describe("PulsePoint Adapter Tests", () => {
 
   beforeEach(() => {
     initPulsepointLib();
-    sinon.stub(BidManager, 'addBidResponse');
+    sinon.stub(bidManager, 'addBidResponse');
     sinon.stub(adLoader, 'loadScript');
 
     slotConfigs = {
@@ -59,7 +59,7 @@ describe("PulsePoint Adapter Tests", () => {
   });
 
   afterEach(() => {
-    BidManager.addBidResponse.restore();
+    bidManager.addBidResponse.restore();
     adLoader.loadScript.restore();
     requests = [];
     responses = {};
@@ -94,8 +94,8 @@ describe("PulsePoint Adapter Tests", () => {
       bidCpm: 1.25
     };
     pulsepointAdapter.callBids(slotConfigs);
-    var placement = BidManager.addBidResponse.firstCall.args[0];
-    var bid = BidManager.addBidResponse.firstCall.args[1];
+    let placement = bidManager.addBidResponse.firstCall.args[0];
+    let bid = bidManager.addBidResponse.firstCall.args[1];
     expect(placement).to.equal('/DfpAccount1/slot1');
     expect(bid.bidderCode).to.equal('pulsepoint');
     expect(bid.cpm).to.equal(1.25);
@@ -106,8 +106,8 @@ describe("PulsePoint Adapter Tests", () => {
 
   it('Verify passback', () => {
     pulsepointAdapter.callBids(slotConfigs);
-    var placement = BidManager.addBidResponse.firstCall.args[0];
-    var bid = BidManager.addBidResponse.firstCall.args[1];
+    let placement = bidManager.addBidResponse.firstCall.args[0];
+    let bid = bidManager.addBidResponse.firstCall.args[1];
     expect(placement).to.equal('/DfpAccount1/slot1');
     expect(bid.bidderCode).to.equal('pulsepoint');
     expect(bid).to.not.have.property('ad');
@@ -117,8 +117,8 @@ describe("PulsePoint Adapter Tests", () => {
   it('Verify PulsePoint library is downloaded if nessesary', () => {
     resetPulsepointLib();
     pulsepointAdapter.callBids(slotConfigs);
-    var libraryLoadCall = adLoader.loadScript.firstCall.args[0];
-    var callback = adLoader.loadScript.firstCall.args[1];
+    let libraryLoadCall = adLoader.loadScript.firstCall.args[0];
+    let callback = adLoader.loadScript.firstCall.args[1];
     expect(libraryLoadCall).to.equal('http://tag.contextweb.com/getjs.static.js');
     expect(callback).to.be.a('function');
   });
@@ -126,15 +126,15 @@ describe("PulsePoint Adapter Tests", () => {
   it('Verify Bids get processed after PulsePoint library downloads', () => {
     resetPulsepointLib();
     pulsepointAdapter.callBids(slotConfigs);
-    var callback = adLoader.loadScript.firstCall.args[1];
-    var bidCall = BidManager.addBidResponse.firstCall;
+    let callback = adLoader.loadScript.firstCall.args[1];
+    let bidCall = bidManager.addBidResponse.firstCall;
     expect(callback).to.be.a('function');
     expect(bidCall).to.be.a('null');
     //the library load should initialize pulsepoint lib
     initPulsepointLib();
     callback();
     expect(requests.length).to.equal(2);
-    bidCall = BidManager.addBidResponse.firstCall;
+    bidCall = bidManager.addBidResponse.firstCall;
     expect(bidCall).to.be.a('object');
     expect(bidCall.args[0]).to.equal('/DfpAccount1/slot1');
     expect(bidCall.args[1]).to.be.a('object');
