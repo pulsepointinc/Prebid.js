@@ -24,7 +24,10 @@ export default function AnalyticsAdapter({ url, analyticsType, global, handler }
   var _enableCheck = true;
 
   if (analyticsType === LIBRARY) {
-    loadScript(url, _emptyQueue);
+    loadScript(url, function() {
+      console.log('Queue Length:' + _queue.length);
+      _emptyQueue();
+    });
   }
 
   if (analyticsType === ENDPOINT || BUNDLE) {
@@ -43,6 +46,7 @@ export default function AnalyticsAdapter({ url, analyticsType, global, handler }
 
   function _track({ eventType, args }) {
     if (this.getAdapterType() === LIBRARY || BUNDLE) {
+      console.log(eventType);
       window[global](handler, eventType, args);
     }
 

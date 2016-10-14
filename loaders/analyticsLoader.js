@@ -14,7 +14,6 @@ var options = {
       .map(file => file.replace(/\.[^/.]+$/, ''));
 
     let adapters = analyticsAdapters.map(adapter => adapter.length ? adapter : Object.keys(adapter)[0]);
-
     let inserts = adapters.filter(adapter => {
       if (files.includes(adapter)) {
         return adapter;

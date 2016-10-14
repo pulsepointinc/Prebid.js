@@ -36,6 +36,7 @@ function insertAdapters() {
   }
 
   const inserts = adapterNames.map(name => {
+
     if (files.includes(name)) {
       return name;
     } else {
