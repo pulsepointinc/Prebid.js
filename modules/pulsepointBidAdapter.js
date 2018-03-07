@@ -42,6 +42,7 @@ export const spec = {
       app: app(bidRequests),
       device: device(),
     };
+    applyGdpr(bidRequests, request);
     return {
       method: 'POST',
       url: '//bid.contextweb.com/header/ortb',
@@ -327,6 +328,13 @@ function nativeResponse(imp, bid) {
     }
   }
   return null;
+}
+
+function applyGdpr(bidRequests, request) {
+  if(bidRequests && bidRequests[0].gdprConsent) {
+    request.regs = { ext: { gdpr: bidRequests[0].gdprConsent.consentRequired ? 1 : 0 } };
+    request.user = { ext: { consent: bidRequests[0].gdprConsent.consentString } };
+  }
 }
 
 registerBidder(spec);
