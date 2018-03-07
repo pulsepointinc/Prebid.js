@@ -211,6 +211,11 @@ exports.makeBidRequests = function(adUnits, auctionStart, auctionId, cbTimeout, 
       bidRequests.push(bidderRequest);
     }
   });
+  if (adUnits[0].gdprConsent) {
+    bidRequests.forEach(bidRequest => {
+      bidRequest['gdprConsent'] = adUnits[0].gdprConsent;
+    });
+  }
   return bidRequests;
 };
 

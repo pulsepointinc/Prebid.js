@@ -251,7 +251,7 @@ function _getDigiTrustQueryParams() {
  */
 const LEGACY_PROTOCOL = {
 
-  buildRequest(s2sBidRequest, adUnits) {
+  buildRequest(s2sBidRequest, bidRequests, adUnits) {
     // pbs expects an ad_unit.video attribute if the imp is video
     adUnits.forEach(adUnit => {
       const videoMediaType = utils.deepAccess(adUnit, 'mediaTypes.video');
@@ -381,7 +381,7 @@ const OPEN_RTB_PROTOCOL = {
 
   bidMap: {},
 
-  buildRequest(s2sBidRequest, adUnits) {
+  buildRequest(s2sBidRequest, bidRequests, adUnits) {
     let imps = [];
 
     // transform ad unit into array of OpenRTB impression objects
@@ -454,6 +454,11 @@ const OPEN_RTB_PROTOCOL = {
     const digiTrust = _getDigiTrustQueryParams();
     if (digiTrust) {
       request.user = { ext: { digitrust: digiTrust } };
+    }
+
+    if (bidRequests && bidRequests[0].gdprConsent) {
+      request.regs = { ext: { gdpr: bidRequests[0].gdprConsent.consentRequired ? 1 : 0 } };
+      request.user = { ext: { consent: bidRequests[0].gdprConsent.consentString } };
     }
 
     return request;
@@ -556,7 +561,7 @@ export function PrebidServer() {
       .reduce(utils.flatten)
       .filter(utils.uniques);
 
-    const request = protocolAdapter().buildRequest(s2sBidRequest, adUnitsWithSizes);
+    const request = protocolAdapter().buildRequest(s2sBidRequest, bidRequests, adUnitsWithSizes);
     const requestJson = JSON.stringify(request);
 
     ajax(
