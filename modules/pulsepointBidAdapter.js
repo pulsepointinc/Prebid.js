@@ -45,7 +45,7 @@ export const spec = {
       device: device(),
       bcat: bidRequests[0].params.bcat,
       badv: bidRequests[0].params.badv,
-      user: user(bidderRequest),
+      user: user(bidRequests[0], bidderRequest),
       regs: regs(bidderRequest),
     };
     return {
@@ -394,22 +394,34 @@ function adSize(slot) {
  * Handles the user level attributes and produces
  * an openrtb User object.
  */
-function user(bidRequest) {
+function user(bidRequest, bidderRequest) {
   var ext = {};
-  if (bidRequest) {
-    if (bidRequest.gdprConsent) {
-      ext.consent = bidRequest.gdprConsent.consentString;
+  if (bidderRequest) {
+    if (bidderRequest.gdprConsent) {
+      ext.consent = bidderRequest.gdprConsent.consentString;
     }
+  }
+  if (bidRequest) {
     if (bidRequest.userId) {
-      ext.commonIds = {
-        pubcid: bidRequest.userId.pubcid,
-        tdid: bidRequest.userId.tdid,
-        digitrustid: utils.deepAccess(bidRequest.userId.digitrustid, 'data.id'),
-        id5: bidRequest.userId.id5id,
-      };
+      ext.eids = [];
+      addExternalUserId(ext.eids, bidRequest.userId.pubcid, 'pubcommon');
+      addExternalUserId(ext.eids, bidRequest.userId.tdid, 'adserver.org');
+      addExternalUserId(ext.eids, utils.deepAccess(bidRequest.userId.digitrustid, 'data.id'), 'digitrust');
+      addExternalUserId(ext.eids, bidRequest.userId.id5id, 'id5id');
     }
   }
   return { ext };
+}
+
+function addExternalUserId(eids, value, source) {
+  if (value) {
+    eids.push({
+      source,
+      uids: [{
+        id: value
+      }]
+    });
+  }
 }
 
 /**

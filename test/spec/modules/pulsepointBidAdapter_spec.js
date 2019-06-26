@@ -1,8 +1,7 @@
 /* eslint dot-notation:0, quote-props:0 */
 import {expect} from 'chai';
 import {spec} from 'modules/pulsepointBidAdapter';
-import {getTopWindowLocation} from 'src/utils';
-import {newBidder} from 'src/adapters/bidderFactory';
+import {deepClone, getTopWindowLocation} from 'src/utils';
 
 describe('PulsePoint Adapter Tests', function () {
   const slotConfigs = [{
@@ -508,32 +507,37 @@ describe('PulsePoint Adapter Tests', function () {
     expect(bid.renderer.getConfig().type).to.equal('Inline');
   });
   it('Verify common id parameters', function () {
-    const bidderRequest = {
-      userId: {
-        pubcid: 'userid_pubcid',
-        tdid: 'userid_ttd',
-        digitrustid: {
-          data: {
-            id: 'userid_digitrust',
-            keyv: 4,
-            privacy: {optout: false},
-            producer: 'ABC',
-            version: 2
-          }
+    const bidRequests = deepClone(slotConfigs);
+    bidRequests[0].userId = {
+      pubcid: 'userid_pubcid',
+      tdid: 'userid_ttd',
+      digitrustid: {
+        data: {
+          id: 'userid_digitrust',
+          keyv: 4,
+          privacy: {optout: false},
+          producer: 'ABC',
+          version: 2
         }
       }
     };
-    const request = spec.buildRequests(slotConfigs, bidderRequest);
+    const request = spec.buildRequests(bidRequests);
     expect(request).to.be.not.null;
     const ortbRequest = request.data;
     expect(request.data).to.be.not.null;
     // user object
     expect(ortbRequest.user).to.not.be.undefined;
     expect(ortbRequest.user.ext).to.not.be.undefined;
-    expect(ortbRequest.user.ext.commonIds).to.not.be.undefined;
-    expect(ortbRequest.user.ext.commonIds.pubcid).to.equal('userid_pubcid');
-    expect(ortbRequest.user.ext.commonIds.tdid).to.equal('userid_ttd');
-    expect(ortbRequest.user.ext.commonIds.digitrustid).to.equal('userid_digitrust');
-    expect(ortbRequest.user.ext.commonIds.id5).to.be.undefined;
+    expect(ortbRequest.user.ext.eids).to.not.be.undefined;
+    expect(ortbRequest.user.ext.eids).to.have.lengthOf(3);
+    expect(ortbRequest.user.ext.eids[0].source).to.equal('pubcommon');
+    expect(ortbRequest.user.ext.eids[0].uids).to.have.lengthOf(1);
+    expect(ortbRequest.user.ext.eids[0].uids[0].id).to.equal('userid_pubcid');
+    expect(ortbRequest.user.ext.eids[1].source).to.equal('adserver.org');
+    expect(ortbRequest.user.ext.eids[1].uids).to.have.lengthOf(1);
+    expect(ortbRequest.user.ext.eids[1].uids[0].id).to.equal('userid_ttd');
+    expect(ortbRequest.user.ext.eids[2].source).to.equal('digitrust');
+    expect(ortbRequest.user.ext.eids[2].uids).to.have.lengthOf(1);
+    expect(ortbRequest.user.ext.eids[2].uids[0].id).to.equal('userid_digitrust');
   });
 });
