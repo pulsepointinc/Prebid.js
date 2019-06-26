@@ -507,4 +507,33 @@ describe('PulsePoint Adapter Tests', function () {
     expect(bid.renderer.getConfig().rendererOptions).to.eql(outstreamSlotConfig[0].renderer.options);
     expect(bid.renderer.getConfig().type).to.equal('Inline');
   });
+  it('Verify common id parameters', function () {
+    const bidderRequest = {
+      userId: {
+        pubcid: 'userid_pubcid',
+        tdid: 'userid_ttd',
+        digitrustid: {
+          data: {
+            id: 'userid_digitrust',
+            keyv: 4,
+            privacy: {optout: false},
+            producer: 'ABC',
+            version: 2
+          }
+        }
+      }
+    };
+    const request = spec.buildRequests(slotConfigs, bidderRequest);
+    expect(request).to.be.not.null;
+    const ortbRequest = request.data;
+    expect(request.data).to.be.not.null;
+    // user object
+    expect(ortbRequest.user).to.not.be.undefined;
+    expect(ortbRequest.user.ext).to.not.be.undefined;
+    expect(ortbRequest.user.ext.commonIds).to.not.be.undefined;
+    expect(ortbRequest.user.ext.commonIds.pubcid).to.equal('userid_pubcid');
+    expect(ortbRequest.user.ext.commonIds.tdid).to.equal('userid_ttd');
+    expect(ortbRequest.user.ext.commonIds.digitrustid).to.equal('userid_digitrust');
+    expect(ortbRequest.user.ext.commonIds.id5).to.be.undefined;
+  });
 });
