@@ -405,7 +405,7 @@ function user(bidRequest, bidderRequest) {
     if (bidRequest.userId) {
       ext.eids = [];
       addExternalUserId(ext.eids, bidRequest.userId.pubcid, 'pubcommon');
-      addExternalUserId(ext.eids, bidRequest.userId.tdid, 'adserver.org');
+      addExternalUserId(ext.eids, bidRequest.userId.tdid, 'ttdid');
       addExternalUserId(ext.eids, utils.deepAccess(bidRequest.userId.digitrustid, 'data.id'), 'digitrust');
       addExternalUserId(ext.eids, bidRequest.userId.id5id, 'id5id');
     }
