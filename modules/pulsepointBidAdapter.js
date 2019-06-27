@@ -413,6 +413,9 @@ function user(bidRequest, bidderRequest) {
   return { ext };
 }
 
+/**
+ * Produces external userid object in ortb 3.0 model.
+ */
 function addExternalUserId(eids, value, source) {
   if (value) {
     eids.push({
