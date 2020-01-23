@@ -607,7 +607,7 @@ describe('PulsePoint Adapter Tests', function () {
     expect(ortbRequest.user.ext).to.not.be.undefined;
     expect(ortbRequest.user.ext.eids).to.not.be.undefined;
     expect(ortbRequest.user.ext.eids).to.have.lengthOf(2);
-    expect(ortbRequest.user.ext.eids[0].source).to.equal('pubcommon');
+    expect(ortbRequest.user.ext.eids[0].source).to.equal('pubcid.org');
     expect(ortbRequest.user.ext.eids[0].uids).to.have.lengthOf(1);
     expect(ortbRequest.user.ext.eids[0].uids[0].id).to.equal('userid_pubcid');
     expect(ortbRequest.user.ext.eids[1].source).to.equal('adserver.org');

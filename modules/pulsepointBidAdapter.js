@@ -396,7 +396,7 @@ function user(bidRequest, bidderRequest) {
   if (bidRequest) {
     if (bidRequest.userId) {
       ext.eids = [];
-      addExternalUserId(ext.eids, bidRequest.userId.pubcid, 'pubcommon');
+      addExternalUserId(ext.eids, bidRequest.userId.pubcid, 'pubcid.org');
       addExternalUserId(ext.eids, bidRequest.userId.britepoolid, 'britepool.com');
       addExternalUserId(ext.eids, bidRequest.userId.criteoId, 'criteo');
       addExternalUserId(ext.eids, bidRequest.userId.idl_env, 'identityLink');
